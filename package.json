@@ -1,0 +1,28 @@
+{
+  "name": "cloudwizard",
+  "preferGlobal": "true",
+  "version": "0.0.1",
+  "author": "matty H, misterinterrupt@gmail.com",
+  "description": "A bulk track and set editor for the Soundcloud API",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "main": "./index.js",
+  "keywords": [
+    "edit",
+    "bulk",
+    "soundcloud",
+    "api"
+  ],
+  "dependencies" : {
+    "connect": "2.7.0",
+    "connect-redis": "1.4.5",
+    "socket.io":  "0.9.11",
+    "cookie": "0.0.5",
+    "cookie-signature": "0.0.1"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "0.8.14"
+  }
+}
