@@ -76,7 +76,13 @@ function soundcloudAPIAuth() {
 function getTracks(socket) {
   console.log("get_tracks", arguments);
   var session = getSocketSession(socket);
-  //http.request(sc_auth_options, )
+  var sc_get_tracks_options = {
+      token: session['token']
+  };
+  http.request(sc_get_tracks_options, function(res){
+    // this should just be a json passthru
+    socket.emit('set_tracks', res.body);
+  });
   
 }
 
@@ -85,8 +91,13 @@ function onRedisClientConnect() {
   app.use(connect.static(__dirname + '/public'));
   app.use(connect.cookieParser());
   app.use(connect.session(sessionConfig));
-
-  var server = http.createServer(app).listen(4444),
+  app.use(function(req, res, err) {
+      if(req.method !== 'GET' || req.url.indexOf('/receiver' === -1)){ return next(); }
+      var separator = '&',
+          parts = decodeURI(req.url).split('?', 1)[0].replace(separator, '').split('/'); 
+      console.log(parts);
+  });
+  var server = http.createServer(app).listen(8080),
       io = sio.listen(server);
   io.set('authorization', socketSessionAuthorization);
   io.sockets.on('connection', onSocketConnect);
