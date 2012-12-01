@@ -25,12 +25,15 @@ var http = require('http'),
         client_id: "2105d18bcf851694947795f67b045675",
         client_secret: "ec9f9415a6203ee7d31f01b09fd94af9",
         redirect_uri: "http://matthewdhowell.com/cloudwizard/receiver/soundcloud"
-    //    grant_type: "client_credentials",
-    //    code: "",
-    //    state: ""
+        // grant_type: "client_credentials",
+        // code: "",
+        // state: ""
       }
     };
 
+function sessionError(extra) {
+  throw Error('Error: Session Unavailable', extra);
+}
 
 function socketSessionAuthorization(data, accept) {
   
@@ -43,6 +46,7 @@ function socketSessionAuthorization(data, accept) {
       if(err || !session) {
         return accept('Error: Session Unavailable.', false);
       } else {
+        session.who = 'cthulu';
         data.session = session;
         return accept(null, true);
       }
@@ -51,6 +55,13 @@ function socketSessionAuthorization(data, accept) {
   
     return accept('Error: Session Unavailable.', false);
   }
+}
+
+function getSocketSession(socket) {
+  if(!socket || !socket.handshake.session) {
+    sessionError();
+  }
+  return socket.handshake.session;
 }
 
 function onSocketConnect(socket) {
@@ -62,20 +73,19 @@ function soundcloudAPIAuth() {
   
 }
 
-function getTracks() {
+function getTracks(socket) {
+  console.log("get_tracks", arguments);
+  var session = getSocketSession(socket);
   //http.request(sc_auth_options, )
-  console.log(arguments);
+  
 }
 
-// Bootstrap-ish stuff happens after the store is available
+// Bootstrap-ish stuff happens once Redis is available
 function onRedisClientConnect() {
   app.use(connect.static(__dirname + '/public'));
   app.use(connect.cookieParser());
   app.use(connect.session(sessionConfig));
-  // app.use(function(req, res, next){
-  //   res.write('Hello from Connect!\n');
-  //   res.end(JSON.stringify(req.cookies));
-  // });
+
   var server = http.createServer(app).listen(4444),
       io = sio.listen(server);
   io.set('authorization', socketSessionAuthorization);
