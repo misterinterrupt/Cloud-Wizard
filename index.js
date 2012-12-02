@@ -97,7 +97,7 @@ function onRedisClientConnect() {
           parts = decodeURI(req.url).split('?', 1)[0].replace(separator, '').split('/'); 
       console.log(parts);
   });
-  var server = http.createServer(app).listen(8080),
+  var server = http.createServer(app).listen(8080, 'cloudwizard.matthewdhowell.com'),
       io = sio.listen(server);
   io.set('authorization', socketSessionAuthorization);
   io.sockets.on('connection', onSocketConnect);
